@@ -39,7 +39,7 @@
 
             <a
                 class="btn btn-light"
-                href="book-details.html"
+                href="book-details.php"
             >
                 Details
             </a>
