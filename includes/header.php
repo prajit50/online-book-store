@@ -27,7 +27,7 @@
       <a href="orders.php">Orders</a>
       <a href="admin/dashboard.php">Admin</a>
       <a href="logout.php">Logout</a>
-      <a class="nav-register" href="register.php">Register</a>
+      <a class="nav-register" href="../register.php">Register</a>
     </nav>
 
   </div>
