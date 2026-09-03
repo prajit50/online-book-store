@@ -1,202 +1,62 @@
-<!-- PAGE HEADER -->
+<?php
+$page_title = 'Book Catalog';
+require 'includes/header.php';
+$search = trim($_GET['search'] ?? '');
+$category_id = (int) ($_GET['category'] ?? 0);
+$categories = $conn->query('SELECT * FROM categories ORDER BY name');
+$sql = 'SELECT b.*, c.name category_name FROM books b JOIN categories c ON b.category_id=c.id WHERE 1=1';
+$types = '';
+$params = [];
+if ($search !== '') {
+    $sql .= ' AND (b.title LIKE ? OR b.author LIKE ? OR c.name LIKE ?)';
+    $like = '%' . $search . '%';
+    $types .= 'sss';
+    $params = [$like, $like, $like];
+}
+if ($category_id) {
+    $sql .= ' AND b.category_id=?';
+    $types .= 'i';
+    $params[] = $category_id;
+}
+$sql .= ' ORDER BY b.created_at DESC';
+$stmt = $conn->prepare($sql);
+if ($types)
+    $stmt->bind_param($types, ...$params);
+$stmt->execute();
+$books = $stmt->get_result();
+?>
 <div class="section-head">
     <div>
-        <h1>Book Catalog</h1>
-        <p class="muted">
-            Find your next great read.
-        </p>
+        <h1>Book catalog</h1>
+        <p class="muted">Find your next great read.</p>
     </div>
 </div>
-
-
-<!-- SEARCH AND CATEGORY FILTER -->
-<form class="filters" method="get">
-
-    <!-- Search box -->
-    <input
-        name="search"
-        placeholder="Search title, author, or category"
-    >
-
-    <!-- Category dropdown -->
-    <select name="category">
-
-        <option value="">
-            All categories
-        </option>
-
-        <option value="1">Fiction</option>
-        <option value="2">Non-Fiction</option>
-        <option value="3">Science</option>
-        <option value="4">Technology</option>
-        <option value="5">Biography</option>
-
-    </select>
-
-    <!-- Filter button -->
-    <button class="btn">
-        Filter
-    </button>
-
-</form>
-
-
-<!-- BOOK GRID -->
-<div class="book-grid">
-
-    <!-- BOOK CARD -->
-    <article class="book-card">
-
-        <!-- Book cover -->
-        <img
-            class="book-cover"
-            src="images/book-placeholder.svg"
-            alt="The Great Gatsby cover"
-        >
-
-        <div class="book-info">
-
-            <!-- Book title -->
-            <h3>
-                The Great Gatsby
-            </h3>
-
-            <!-- Author -->
-            <p>
-                F. Scott Fitzgerald
-            </p>
-
-            <!-- Price + Category -->
-            <div class="book-meta">
-
-                <span class="price">
-                    Rs. 500.00
-                </span>
-
-                <span class="tag">
-                    Fiction
-                </span>
-
-            </div>
-
-            <!-- Stock status -->
-            <p class="stock-in">
-                In stock
-            </p>
-
-            <!-- Card actions -->
-            <div class="card-actions">
-
-                <!-- View details -->
-                <a
-                    class="btn btn-light"
-                    href="book-details.php?id=1"
-                >
-                    Details
-                </a>
-
-                <!-- Add to cart -->
-                <form
-                    action="cart.php"
-                    method="post"
-                >
-
-                    <input
-                        type="hidden"
-                        name="action"
-                        value="add"
-                    >
-
-                    <input
-                        type="hidden"
-                        name="book_id"
-                        value="1"
-                    >
-
-                    <button class="btn">
-                        Add to cart
-                    </button>
-
-                </form>
-
-            </div>
-
-        </div>
-
-    </article>
-
-
-    <!-- BOOK CARD -->
-    <article class="book-card">
-
-        <img
-            class="book-cover"
-            src="images/book-placeholder.svg"
-            alt="Atomic Habits cover"
-        >
-
-        <div class="book-info">
-
-            <h3>
-                Atomic Habits
-            </h3>
-
-            <p>
-                James Clear
-            </p>
-
-            <div class="book-meta">
-
-                <span class="price">
-                    Rs. 750.00
-                </span>
-
-                <span class="tag">
-                    Non-Fiction
-                </span>
-
-            </div>
-
-            <p class="stock-in">
-                In stock
-            </p>
-
-            <div class="card-actions">
-
-                <a
-                    class="btn btn-light"
-                    href="book-details.php?id=2"
-                >
-                    Details
-                </a>
-
-                <form
-                    action="cart.php"
-                    method="post"
-                >
-
-                    <input
-                        type="hidden"
-                        name="action"
-                        value="add"
-                    >
-
-                    <input
-                        type="hidden"
-                        name="book_id"
-                        value="2"
-                    >
-
-                    <button class="btn">
-                        Add to cart
-                    </button>
-
-                </form>
-
-            </div>
-
-        </div>
-
-    </article>
-
-</div>
+<form class="filters" method="get"><input name="search" value="<?= e($search) ?>"
+        placeholder="Search title, author, or category"><select name="category">
+        <option value="">All categories</option><?php while ($c = $categories->fetch_assoc()): ?>
+            <option value="<?= $c['id'] ?>" <?= $category_id === $c['id'] ? 'selected' : '' ?>><?= e($c['name']) ?></option>
+        <?php endwhile; ?>
+    </select><button class="btn">Filter</button></form>
+<?php if (!$books->num_rows): ?>
+    <div class="empty">No books matched your search.</div><?php else: ?>
+    <div class="book-grid">
+        <?php while ($book = $books->fetch_assoc()):
+            $image = $book['image'] ? 'uploads/' . e($book['image']) : 'images/book-placeholder.svg'; ?>
+            <article class="book-card"><img class="book-cover" src="<?= $image ?>" alt="<?= e($book['title']) ?> cover">
+                <div class="book-info">
+                    <h3><?= e($book['title']) ?></h3>
+                    <p><?= e($book['author']) ?></p>
+                    <div class="book-meta"><span class="price">Rs. <?= number_format($book['price'], 2) ?></span><span
+                            class="tag"><?= e($book['category_name']) ?></span></div>
+                    <p class="<?= $book['quantity'] ? 'stock-in' : 'stock-out' ?>">
+                        <?= $book['quantity'] ? 'In stock' : 'Out of stock' ?></p>
+                    <div class="card-actions"><a class="btn btn-light"
+                            href="book-details.php?id=<?= $book['id'] ?>">Details</a><?php if ($book['quantity']): ?>
+                            <form action="cart.php" method="post"><input type="hidden" name="action" value="add"><input
+                                    type="hidden" name="book_id" value="<?= $book['id'] ?>"><button class="btn">Add to cart</button>
+                            </form><?php endif; ?>
+                    </div>
+                </div>
+            </article><?php endwhile; ?>
+    </div><?php endif; ?>
+<?php require 'includes/footer.php'; ?>
