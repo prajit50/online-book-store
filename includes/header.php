@@ -1,43 +1,30 @@
+<?php require_once __DIR__ . '/db.php'; require_once __DIR__ . '/auth.php'; $page_title = $page_title ?? 'BookNest'; ?>
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>BookNest</title>
-  <link rel="stylesheet" href="../css/style.css">
-</head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title><?= e($page_title) ?> | BookNest</title>
+  <link rel="stylesheet" href="css/style.css">
+  <script src="https://mcp.figma.com/mcp/html-to-design/capture.js" async></script>
+  </head>
 
-<body>
-
-<header class="site-header">
-  <div class="container nav-wrap">
-
-    <a class="logo" href="index.php">
-      Book<span>Nest</span>
-    </a>
-
-    <button class="nav-toggle" aria-label="Toggle navigation">
-      ☰
-    </button>
-
+   <body>
+    <header class="site-header"><div class="container nav-wrap">
+      
+    <a class="logo" href="index.php">Book<span>Nest</span></a>
+    <button class="nav-toggle" aria-label="Toggle navigation">☰</button>
     <nav class="main-nav">
-      <a href="index.php">Home</a>
-      <a href="books.php">Books</a>
-      <a href="cart.php">Cart <small>(0)</small></a>
-      <a href="orders.php">Orders</a>
-      <a href="admin/dashboard.php">Admin</a>
-      <a href="logout.php">Logout</a>
-      <a class="nav-register" href="../register.php">Register</a>
-    </nav>
-
-  </div>
-</header>
-
-<main class="page-content">
-  <div class="container">
-    <!-- Page content goes here -->
-  </div>
-</main>
-
-</body>
-</html>
+    <a href="index.php">Home</a>
+    <a href="books.php">Books</a>
+    <?php if (is_logged_in()): ?>
+    <a href="cart.php">Cart <small>(<?= cart_count($conn) ?>)</small></a>
+    <a href="orders.php">Orders</a>
+    <?php if (is_admin()): ?>
+    <a href="admin/dashboard.php">Admin</a><?php endif; ?>
+    <a href="logout.php">Logout</a>
+    <?php else: ?>
+    <a href="login.php">Login</a>
+    <a class="nav-register" href="register.php">Register</a><?php endif; ?>
+  </nav>
+</div></header>
+<main class="page-content"> <div class="container"><?php show_flash(); ?>
