@@ -4,22 +4,35 @@
 
 <section class="success-page">
 
+    <!--
+        Success icon.
+        The check mark indicates that the order
+        was successfully placed.
+    -->
     <div class="success-mark">✓</div>
 
+
+    <!-- Main success message -->
     <h1>
         Order placed successfully
     </h1>
 
+
+    <!-- Additional information for the customer -->
     <p class="muted">
         Thank you! We will contact you before delivery.
     </p>
 
+
+    <!--
+        Button that takes the user to their
+        previous orders / order history.
+    -->
     <a class="btn" href="orders.php">
         View order history
     </a>
 
 </section>
-
 
 <!-- =====================================================
      ORDER HISTORY
@@ -30,88 +43,128 @@
 </h1>
 
 
-<!-- =================================================
-     NO ORDERS
-================================================== -->
+<!--
+    Check whether the user has any orders.
 
-<div class="empty">
-
-    You have not placed an order yet.
-
-    <br><br>
-
-    <a class="btn" href="books.php">
-        Browse books
-    </a>
-
-</div>
+    $orders->num_rows contains the number of
+    orders returned from the database.
+-->
+<?php if (!$orders->num_rows): ?>
 
 
-<!-- =================================================
-     ORDERS TABLE
-================================================== -->
+    <!-- =================================================
+         NO ORDERS
+    ================================================== -->
 
-<div class="table-wrap">
+    <div class="empty">
 
-    <table>
+        <!-- Message shown when the user has no orders -->
+        You have not placed an order yet.
 
-        <thead>
-            <tr>
-                <th>Order ID</th>
-                <th>Date</th>
-                <th>Payment</th>
-                <th>Status</th>
-                <th>Total</th>
-            </tr>
-        </thead>
-
-        <tbody>
-
-            <!-- Sample Order 1 -->
-            <tr>
-
-                <td>#25</td>
-
-                <td>Aug 8, 2026</td>
-
-                <td>COD</td>
-
-                <td>
-                    <span class="status status-pending">
-                        Pending
-                    </span>
-                </td>
-
-                <td>
-                    Rs. 1,250.00
-                </td>
-
-            </tr>
+        <br><br>
 
 
-            <!-- Sample Order 2 -->
-            <tr>
+        <!--
+            Send the user to the book catalog
+            so they can purchase a book.
+        -->
+        <a class="btn" href="books.php">
+            Browse books
+        </a>
 
-                <td>#24</td>
+    </div>
 
-                <td>Aug 5, 2026</td>
 
-                <td>COD</td>
+<?php else: ?>
 
-                <td>
-                    <span class="status status-delivered">
-                        Delivered
-                    </span>
-                </td>
 
-                <td>
-                    Rs. 850.00
-                </td>
+    <!-- =================================================
+         ORDERS TABLE
+    ================================================== -->
 
-            </tr>
+    <div class="table-wrap">
 
-        </tbody>
+        <table>
 
-    </table>
+            <!-- Table headings -->
+            <thead>
+                <tr>
 
-</div>
+                    <!-- Unique order ID -->
+                    <th>
+                        Order ID
+                    </th>
+
+                    <!-- Date the order was created -->
+                    <th>
+                        Date
+                    </th>
+
+                    <!-- Payment method -->
+                    <th>
+                        Payment
+                    </th>
+
+                    <!-- Current order status -->
+                    <th>
+                        Status
+                    </th>
+
+                    <!-- Total amount -->
+                    <th>
+                        Total
+                    </th>
+
+                </tr>
+            </thead>
+
+
+            <!-- =================================================
+                 DISPLAY EACH ORDER
+            ================================================== -->
+
+            <tbody>
+
+                <?php while ($order = $orders->fetch_assoc()): ?>
+
+                    <tr>
+
+                        <!--
+                            Display the order ID.
+
+                            Example:
+                            #25
+                        -->
+                        <td>
+                            #<?= $order['id'] ?>
+                        </td>
+
+                        <td>
+                            <?= date('M j, Y', strtotime($order['created_at'])) ?>
+                        </td>
+
+                        <td>
+                            <?= e($order['payment_method']) ?>
+                        </td>
+
+                        <td>
+                            <span class="status status-<?= strtolower($order['status']) ?>">
+                                <?= e($order['status']) ?>
+                            </span>
+                        </td>
+
+                        <td>
+                            Rs. <?= number_format($order['total_amount'], 2) ?>
+                        </td>
+
+                    </tr>
+
+                <?php endwhile; ?>
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+<?php endif; ?>

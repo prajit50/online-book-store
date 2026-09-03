@@ -53,4 +53,4 @@ $recent = $conn->query('SELECT o.*,u.full_name FROM orders o JOIN users u ON o.u
         </tbody>
     </table>
 </div>
-<?php require '../includes/admin-footer.php'; ?>
+<?php require '../includes/admin-footer.php';?>
