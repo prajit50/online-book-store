@@ -537,3 +537,283 @@ tr:last-child td {
     margin: 28px 0 0;
     padding-top: 12px
 }
+
+.admin-body {
+    background: #f7f7f7
+}
+
+.admin-layout {
+    min-height: 100vh;
+    display: grid;
+    grid-template-columns: 230px 1fr
+}
+
+.sidebar {
+    background: #171717;
+    color: #fff;
+    padding: 25px 18px
+}
+
+.sidebar .logo {
+    display: block;
+    margin: 0 10px 30px
+}
+
+.sidebar .logo span {
+    color: #bbb
+}
+
+.admin-caption {
+    font-size: 11px;
+    color: #aaa;
+    letter-spacing: 1px;
+    margin: 0 10px 10px
+}
+
+.sidebar nav a {
+    display: block;
+    padding: 11px 12px;
+    border-radius: 7px;
+    color: #ddd;
+    margin-bottom: 4px
+}
+
+.sidebar nav a:hover {
+    background: #333;
+    color: #fff
+}
+
+.admin-top {
+    height: 62px;
+    background: #fff;
+    border-bottom: 1px solid var(--line);
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 18px;
+    padding: 0 30px
+}
+
+.admin-top a {
+    font-size: 13px;
+    text-decoration: underline
+}
+
+.admin-content {
+    padding: 30px
+}
+
+.admin-content h1 {
+    margin-top: 0
+}
+
+.stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 18px;
+    margin: 20px 0 30px
+}
+
+.stat-card {
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 20px
+}
+
+.stat-card p {
+    margin: 0;
+    color: #666
+}
+
+.stat-card strong {
+    font-size: 31px
+}
+
+.admin-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 0 0 18px
+}
+
+.admin-form {
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 25px;
+    max-width: 780px
+}
+
+.thumbnail {
+    width: 45px;
+    height: 57px;
+    object-fit: cover;
+    border-radius: 4px;
+    background: #ddd
+}
+
+.empty {
+    text-align: center;
+    padding: 45px;
+    color: #666;
+    background: #fafafa;
+    border: 1px dashed #d1d5db;
+    border-radius: 10px
+}
+
+.success-page {
+    text-align: center;
+    padding: 70px 10px
+}
+
+.success-page h1 {
+    font-size: 34px
+}
+
+.success-mark {
+    width: 62px;
+    height: 62px;
+    border-radius: 50%;
+    display: inline-grid;
+    place-items: center;
+    background: #e7f6ec;
+    color: #176b32;
+    font-size: 30px
+}
+
+@media(max-width:850px) {
+    .book-grid {
+        grid-template-columns: repeat(3, 1fr)
+    }
+
+    .category-grid {
+        grid-template-columns: repeat(3, 1fr)
+    }
+
+    .admin-layout {
+        grid-template-columns: 1fr
+    }
+
+    .sidebar {
+        display: none
+    }
+
+    .sidebar.open {
+        display: block;
+        position: fixed;
+        z-index: 20;
+        height: 100%;
+        width: 230px
+    }
+
+    .sidebar-toggle {
+        display: block;
+        margin-right: auto
+    }
+
+    .admin-content {
+        padding: 22px
+    }
+
+    .stats {
+        grid-template-columns: repeat(2, 1fr)
+    }
+}
+
+@media(max-width:600px) {
+    .nav-toggle {
+        display: block
+    }
+
+    .main-nav {
+        display: none;
+        position: absolute;
+        top: 70px;
+        left: 0;
+        right: 0;
+        background: #fff;
+        border-bottom: 1px solid var(--line);
+        padding: 15px 16px;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 8px
+    }
+
+    .main-nav.open {
+        display: flex
+    }
+
+    .main-nav a {
+        padding: 8px
+    }
+
+    .book-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px
+    }
+
+    .book-cover {
+        height: 180px
+    }
+
+    .card-actions {
+        flex-direction: column
+    }
+
+    .category-grid {
+        grid-template-columns: repeat(2, 1fr)
+    }
+
+    .details,
+    .cart-layout,
+    .checkout-layout {
+        grid-template-columns: 1fr;
+        gap: 22px
+    }
+
+    .details-image {
+        max-height: 380px
+    }
+
+    .form-row {
+        grid-template-columns: 1fr
+    }
+
+    .filters {
+        flex-direction: column
+    }
+
+    .filters select {
+        width: 100%
+    }
+
+    .footer-grid {
+        grid-template-columns: 1fr
+    }
+
+    .stats {
+        grid-template-columns: 1fr
+    }
+
+    .admin-actions {
+        gap: 10px;
+        align-items: flex-start;
+        flex-direction: column
+    }
+
+    .hero {
+        padding: 40px 24px
+    }
+
+    .search-form {
+        flex-direction: column;
+        gap: 8px
+    }
+
+    .search-form input,
+    .search-form button {
+        border-radius: 8px;
+        border: 1px solid #d1d5db
+    }
+}
