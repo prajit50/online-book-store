@@ -49,7 +49,8 @@ $books = $stmt->get_result();
                     <div class="book-meta"><span class="price">Rs. <?= number_format($book['price'], 2) ?></span><span
                             class="tag"><?= e($book['category_name']) ?></span></div>
                     <p class="<?= $book['quantity'] ? 'stock-in' : 'stock-out' ?>">
-                        <?= $book['quantity'] ? 'In stock' : 'Out of stock' ?></p>
+                        <?= $book['quantity'] ? 'In stock' : 'Out of stock' ?>
+                    </p>
                     <div class="card-actions"><a class="btn btn-light"
                             href="book-details.php?id=<?= $book['id'] ?>">Details</a><?php if ($book['quantity']): ?>
                             <form action="cart.php" method="post"><input type="hidden" name="action" value="add"><input
