@@ -15,9 +15,15 @@ document.addEventListener('DOMContentLoaded', function ()
     form.addEventListener('submit', function (e) 
     {
       var password = form.querySelector('[name=password]'), confirm = form.querySelector('[name=confirm_password]');
+      var phone = form.querySelector('[name=phone]');
+
       if (password && confirm && password.value !== confirm.value) 
 
-        { e.preventDefault(); alert('Passwords do not match.'); }
+        { e.preventDefault(); alert('Passwords do not match.'); return; }
+
+      if (phone && !/^[0-9]{10}$/.test(phone.value.trim())) 
+
+        { e.preventDefault(); alert('Phone number must be exactly 10 digits.'); }
     });
   });
 });

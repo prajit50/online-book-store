@@ -18,12 +18,12 @@ if (isset($_POST['delete_id'])) {
 $search = trim($_GET['search'] ?? '');
 if ($search !== '') {
     $like = '%' . $search . '%';
-    $stmt = $conn->prepare("SELECT id,full_name,email,phone,address,created_at FROM users WHERE role='user' AND (full_name LIKE ? OR email LIKE ? OR phone LIKE ?) ORDER BY created_at DESC");
+    $stmt = $conn->prepare("SELECT id,full_name,email,phone,created_at FROM users WHERE role='user' AND (full_name LIKE ? OR email LIKE ? OR phone LIKE ?) ORDER BY created_at DESC");
     $stmt->bind_param('sss', $like, $like, $like);
     $stmt->execute();
     $users = $stmt->get_result();
 } else
-    $users = $conn->query("SELECT id,full_name,email,phone,address,created_at FROM users WHERE role='user' ORDER BY created_at DESC");
+    $users = $conn->query("SELECT id,full_name,email,phone,created_at FROM users WHERE role='user' ORDER BY created_at DESC");
 ?>
 <div class="admin-actions">
     <div>
@@ -40,7 +40,6 @@ if ($search !== '') {
                 <th>Name</th>
                 <th>Email</th>
                 <th>Phone</th>
-                <th>Address</th>
                 <th>Joined</th>
                 <th>Action</th>
             </tr>
@@ -50,7 +49,6 @@ if ($search !== '') {
                     <td><?= e($u['full_name']) ?></td>
                     <td><?= e($u['email']) ?></td>
                     <td><?= e($u['phone']) ?></td>
-                    <td><?= e($u['address']) ?></td>
                     <td><?= date('M j, Y', strtotime($u['created_at'])) ?></td>
                     <td>
                         <form method="post" onsubmit="return confirm('Delete this user?')"><input type="hidden"

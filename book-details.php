@@ -11,9 +11,9 @@ if (!$book) {
     require 'includes/footer.php';
     exit;
 }
-$image = $book['image'] ? 'uploads/' . e($book['image']) : 'images/book-placeholder.svg';
+$image = book_image_url($book['image'] ?? '');
 ?>
-<section class="details"><img class="details-image" src="<?= $image ?>" alt="<?= e($book['title']) ?> cover">
+<section class="details"><img class="details-image" src="<?= e($image) ?>" alt="<?= e($book['title']) ?> cover">
     <div>
         <p class="tag"><?= e($book['category_name']) ?></p>
         <h1><?= e($book['title']) ?></h1>

@@ -57,7 +57,7 @@ online-book-store/
 ├── diagrams/            Mermaid source for academic diagrams
 ├── images/              Placeholder assets
 ├── includes/            Shared connection, auth, header/footer files
-├── js/script.js         Menu and small form interactions
+├── javascript/script.js Menu and small form interactions
 ├── tests/test-cases.md
 ├── uploads/             Uploaded book covers (must be writable)
 └── index.php            Store front

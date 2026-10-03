@@ -1,398 +1,102 @@
 <?php
-
-// Include the database connection.
 require 'includes/db.php';
-
-// Include authentication-related functions.
 require 'includes/auth.php';
 
+if (is_logged_in()) {
+    redirect($_SESSION['user']['role'] === 'admin' ? 'admin/dashboard.php' : 'index.php');
+}
 
-// =========================================================
-// CHECK IF USER IS ALREADY LOGGED IN
-// =========================================================
-
-// If the user is already logged in,
-// redirect them to the homepage.
-if (is_logged_in())
-    redirect('index.php');
-
-
-// Variable used to store registration errors.
 $error = '';
 
-
-// =========================================================
-// HANDLE REGISTRATION FORM SUBMISSION
-// =========================================================
-
-// Check whether the registration form was submitted.
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-
-    // Get the user's name and remove extra spaces.
     $name = trim($_POST['name'] ?? '');
-
-    // Get the user's email.
     $email = trim($_POST['email'] ?? '');
-
-    // Get the user's phone number.
     $phone = trim($_POST['phone'] ?? '');
-
-    // Get the user's address.
-    $address = trim($_POST['address'] ?? '');
-
-    // Get the password.
     $password = $_POST['password'] ?? '';
-
-    // Get the password confirmation.
     $confirm = $_POST['confirm_password'] ?? '';
 
-
-    // =====================================================
-    // VALIDATE REQUIRED FIELDS
-    // =====================================================
-
-    // Check whether any required field is empty.
-    if (
-        !$name ||
-        !$email ||
-        !$phone ||
-        !$address ||
-        !$password
-    )
-
-        // Show an error if a required field is missing.
+    if (!$name || !$email || !$phone || !$password) {
         $error = 'All fields are required.';
-
-
-    // =====================================================
-    // VALIDATE EMAIL
-    // =====================================================
-
-    elseif (!filter_var($email, FILTER_VALIDATE_EMAIL))
-
-        // Check whether the email has a valid format.
+    } elseif (!preg_match('/^[0-9]{10}$/', $phone)) {
+        $error = 'Phone number must be exactly 10 digits.';
+    } elseif (!preg_match('/^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/', $email)) {
         $error = 'Enter a valid email address.';
-
-
-    // =====================================================
-    // CHECK PASSWORD CONFIRMATION
-    // =====================================================
-
-    elseif ($password !== $confirm)
-
-        // Make sure both passwords are identical.
+    } elseif ($password !== $confirm) {
         $error = 'Passwords do not match.';
-
-
-    // =====================================================
-    // CHECK PASSWORD LENGTH
-    // =====================================================
-
-    elseif (strlen($password) < 6)
-
-        // Require at least 6 characters.
-        $error = 'Password must be at least 6 characters.';
-
-
-    // =====================================================
-    // CREATE USER ACCOUNT
-    // =====================================================
-
-    else {
-
-        // -------------------------------------------------
-        // CHECK IF EMAIL ALREADY EXISTS
-        // -------------------------------------------------
-
-        // Prepare a query to find an existing account
-        // with the same email address.
-        $check = $conn->prepare(
-            'SELECT id FROM users WHERE email=?'
-        );
-
-
-        // Bind the email to the SQL placeholder.
-        // 's' means the value is a string.
-        $check->bind_param(
-            's',
-            $email
-        );
-
-
-        // Execute the query.
+    } elseif (strlen($password) < 8) {
+        $error = 'Password must be at least 8 characters.';
+    } else {
+        $check = $conn->prepare('SELECT id FROM users WHERE email=?');
+        $check->bind_param('s', $email);
         $check->execute();
 
-
-        // Check whether the query returned any users.
-        if ($check->get_result()->num_rows)
-
-            // Email is already registered.
+        if ($check->get_result()->num_rows) {
             $error = 'This email is already registered.';
-
-
-        // -------------------------------------------------
-        // INSERT NEW USER
-        // -------------------------------------------------
-
-        else {
-
-            // Hash the password before storing it.
-            //
-            // The plain-text password is NEVER stored
-            // directly in the database.
-            $hash = password_hash(
-                $password,
-                PASSWORD_DEFAULT
-            );
-
-
-            // Prepare the INSERT query.
-            $stmt = $conn->prepare(
-                'INSERT INTO users(
-                    full_name,
-                    email,
-                    phone,
-                    address,
-                    password
-                ) VALUES(?,?,?,?,?)'
-            );
-
-
-            // Bind the five values to the query.
-            //
-            // All five values are strings, therefore:
-            // sssss
-            $stmt->bind_param(
-                'sssss',
-                $name,
-                $email,
-                $phone,
-                $address,
-                $hash
-            );
-
-
-            // Execute the INSERT query.
-            // This creates the user's account.
+        } else {
+            $hash = password_hash($password, PASSWORD_DEFAULT);
+            $stmt = $conn->prepare('INSERT INTO users(full_name, email, phone, password) VALUES(?,?,?,?)');
+            $stmt->bind_param('ssss', $name, $email, $phone, $hash);
             $stmt->execute();
 
-
-            // Store a success message.
-            set_flash(
-                'Account created. Please log in.'
-            );
-
-
-            // Redirect the user to the login page.
+            set_flash('Account created. Please log in.');
             redirect('login.php');
         }
     }
 }
 
-
-// =========================================================
-// DISPLAY REGISTRATION PAGE
-// =========================================================
-
-// Set the page title.
 $page_title = 'Create Account';
-
-
-// Include the common website header.
 require 'includes/header.php';
-
 ?>
 
-
-<!-- =====================================================
-     REGISTRATION FORM
-====================================================== -->
-
-<form
-    class="form-card"
-    method="post"
-    data-validate
->
-
-    <!-- Page heading -->
-    <h1>
-        Create account
-    </h1>
-
-
-    <!-- Description -->
-    <p class="muted">
-        Join BookNest to place orders.
-    </p>
-
-
-    <!-- =================================================
-         ERROR MESSAGE
-    ================================================== -->
+<form class="form-card auth-form" method="post" data-validate>
+    <h1>Create account</h1>
+    <p class="muted">Join BookNest to place orders.</p>
 
     <?php if ($error): ?>
-
-        <div class="alert alert-danger">
-            <?= e($error) ?>
-        </div>
-
+        <div class="alert alert-danger"><?= e($error) ?></div>
     <?php endif; ?>
 
-
-    <!-- =================================================
-         FULL NAME
-    ================================================== -->
-
     <div class="form-group">
-
-        <label>
-            Full Name
-        </label>
-
-        <input
-            name="name"
-            required
-            value="<?= e(
-                $_POST['name'] ?? ''
-            ) ?>"
-        >
-
+        <label>Full Name</label>
+        <input name="name" required value="<?= e($_POST['name'] ?? '') ?>">
     </div>
 
+    <div class="form-group">
+        <label>Email</label>
+        <input type="email" name="email" required pattern="[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}" value="<?= e($_POST['email'] ?? '') ?>">
+    </div>
 
-    <!-- =================================================
-         EMAIL AND PHONE
-    ================================================== -->
+    <div class="form-group">
+        <label>Phone</label>
 
-    <div class="form-row">
-
-        <!-- Email -->
-        <div class="form-group">
-
-            <label>
-                Email
-            </label>
-
+        <div class="phone-field">
+            <span class="phone-prefix">+977</span>
             <input
-                type="email"
-                name="email"
-                required
-                value="<?= e(
-                    $_POST['email'] ?? ''
-                ) ?>"
-            >
-
-        </div>
-
-
-        <!-- Phone -->
-        <div class="form-group">
-
-            <label>
-                Phone Number
-            </label>
-
-            <input
+                type="tel"
+                inputmode="numeric"
                 name="phone"
                 required
-                value="<?= e(
-                    $_POST['phone'] ?? ''
-                ) ?>"
+                pattern="[0-9]{10}"
+                maxlength="10"
+                value="<?= e($_POST['phone'] ?? '') ?>"
             >
-
         </div>
-
     </div>
-
-
-    <!-- =================================================
-         ADDRESS
-    ================================================== -->
 
     <div class="form-group">
-
-        <label>
-            Address
-        </label>
-
-        <textarea
-            name="address"
-            required
-        ><?= e(
-            $_POST['address'] ?? ''
-        ) ?></textarea>
-
+        <label>Password</label>
+        <input type="password" name="password" required>
     </div>
 
-
-    <!-- =================================================
-         PASSWORDS
-    ================================================== -->
-
-    <div class="form-row">
-
-        <!-- Password -->
-        <div class="form-group">
-
-            <label>
-                Password
-            </label>
-
-            <input
-                type="password"
-                name="password"
-                required
-                minlength="6"
-            >
-
-        </div>
-
-
-        <!-- Confirm password -->
-        <div class="form-group">
-
-            <label>
-                Confirm Password
-            </label>
-
-            <input
-                type="password"
-                name="confirm_password"
-                required
-                minlength="6"
-            >
-
-        </div>
-
+    <div class="form-group">
+        <label>Confirm Password</label>
+        <input type="password" name="confirm_password" required>
     </div>
 
+    <button class="btn" type="submit">Register</button>
 
-    <!-- Register button -->
-    <button
-        class="btn"
-        type="submit"
-    >
-        Register
-    </button>
-
-
-    <!-- Login link -->
-    <p class="form-note">
-
-        Already registered?
-
-        <a href="login.php">
-            <u>Login</u>
-        </a>
-
-    </p>
-
+    <p class="form-note">Already have an account? <a href="login.php"><u>Log in</u></a></p>
 </form>
 
+<?php require 'includes/footer.php'; ?> 
 
-<?php
-
-// Include the common website footer.
-require 'includes/footer.php';
-
-?>

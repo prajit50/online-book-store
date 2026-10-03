@@ -240,9 +240,7 @@ $categories = $conn->query(
 ?>
 
 
-<!-- =====================================================
-     PAGE HEADER
-====================================================== -->
+<!--PAGE HEADER-->
 
 <div class="admin-actions">
 
@@ -261,23 +259,16 @@ $categories = $conn->query(
 </div>
 
 
-<!-- =====================================================
-     CATEGORY FORM + CATEGORY TABLE
-====================================================== -->
+<!-- CATEGORY FORM + CATEGORY TABLE -->
 
 <div class="form-row">
 
 
-    <!-- =================================================
-         ADD / EDIT CATEGORY FORM
-    ================================================== -->
+    <!-- ADD / EDIT CATEGORY FORM -->
 
     <form class="admin-form" method="post">
 
-        <!--
-            Change the heading depending on whether
-            we are adding or editing.
-        -->
+        <!--Change the heading depending on whether we are adding or editing.-->
         <h2>
             <?= $edit ? 'Edit category' : 'Add category' ?>
         </h2>
@@ -357,9 +348,7 @@ $categories = $conn->query(
     </form>
 
 
-    <!-- =================================================
-         CATEGORY TABLE
-    ================================================== -->
+    <!-- CATEGORY TABLE-->
 
     <div class="table-wrap">
 
@@ -389,11 +378,6 @@ $categories = $conn->query(
                 ?>
 
                     <tr>
-
-
-                        <!-- =================================
-                             CATEGORY NAME
-                        ================================== -->
 
                         <td>
 

@@ -18,7 +18,6 @@ CREATE TABLE users (
   full_name VARCHAR(100) NOT NULL,
   email VARCHAR(120) NOT NULL UNIQUE,
   phone VARCHAR(30) NOT NULL,
-  address TEXT NOT NULL,
   password VARCHAR(255) NOT NULL,
   role ENUM('user','admin') NOT NULL DEFAULT 'user',
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
@@ -69,7 +68,11 @@ CREATE TABLE orders (
   user_id INT UNSIGNED NOT NULL,
   customer_name VARCHAR(100) NOT NULL,
   phone VARCHAR(30) NOT NULL,
-  address TEXT NOT NULL,
+  province VARCHAR(100) NULL,
+  district VARCHAR(100) NULL,
+  municipality VARCHAR(100) NULL,
+  ward VARCHAR(20) NULL,
+  street_address TEXT NULL,
   total_amount DECIMAL(10,2) NOT NULL,
   payment_method VARCHAR(20) NOT NULL DEFAULT 'COD',
   status ENUM('Pending','Processing','Delivered','Cancelled') NOT NULL DEFAULT 'Pending',
@@ -88,8 +91,8 @@ CREATE TABLE order_items (
 ) ENGINE=InnoDB;
 
 -- Default administrator password: admin123 (change after first login)
-INSERT INTO users (full_name,email,phone,address,password,role) VALUES
-('BookNest Administrator','admin@booknest.test','9800000000','Kathmandu, Nepal','$2y$10$pTFkSm6XExXT8XjEqKRQ.e4uelMQrmJQEMqabt8/gLxpsqY7eNpqu','admin');
+INSERT INTO users (full_name,email,phone,password,role) VALUES
+('BookNest Administrator','admin@booknest.test','9800000000','$2y$10$K0VmjR7Y/F/spY05T8oIpel1T.zWRflZTLul5lfjnUk9yxDOgM.Ny','admin');
 
 INSERT INTO categories (name,description) VALUES
 ('Programming','Software development and coding books'),

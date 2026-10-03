@@ -43,9 +43,28 @@ $recent = $conn->query('SELECT o.*,u.full_name FROM orders o JOIN users u ON o.u
             </tr>
         </thead>
         <tbody><?php while ($o = $recent->fetch_assoc()): ?>
+                <?php
+                $address_parts = [
+                    $o['province'] ?? '',
+                    $o['district'] ?? '',
+                    $o['municipality'] ?? '',
+                    ($o['ward'] ?? '') !== '' ? 'Ward ' . $o['ward'] : '',
+                    $o['street_address'] ?? '',
+                ];
+                $address_parts = array_values(array_filter($address_parts, function ($part) {
+                    return $part !== '' && $part !== null;
+                }));
+                $delivery_address = implode(', ', $address_parts);
+                ?>
                 <tr>
                     <td>#<?= $o['id'] ?></td>
-                    <td><?= e($o['full_name']) ?></td>
+                    <td>
+                        <strong><?= e($o['full_name']) ?></strong><br>
+                        <small><?= e($o['phone'] ?? '') ?></small>
+                        <?php if ($delivery_address): ?>
+                            <br><small><?= e($delivery_address) ?></small>
+                        <?php endif; ?>
+                    </td>
                     <td><?= date('M j, Y', strtotime($o['created_at'])) ?></td>
                     <td><span class="status status-<?= strtolower($o['status']) ?>"><?= e($o['status']) ?></span></td>
                     <td>Rs. <?= number_format($o['total_amount'], 2) ?></td>

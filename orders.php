@@ -1,7 +1,7 @@
 <?php
 require 'includes/db.php';
 require 'includes/auth.php';
-require_login();
+require_user();
 $page_title = 'My Orders';
 require 'includes/header.php';
 if (isset($_GET['success'])): ?>

@@ -1,4 +1,3 @@
-<?php ?>
 </div>
 </main>
 <footer class="site-footer">
@@ -12,11 +11,12 @@
         </div>
         <div>
             <h4>Contact</h4>
-            <p>Banepa, Nepal<br>+977 9823198532<br>hello@booknest.test</p>
+            <p>Banepa, Nepal<br>+977 9823198253<br>hello@booknest.test</p>
         </div>
     </div>
     <p class="copyright">© <?= date('Y') ?> BookNest. BCA 4th Semester Project.</p>
 </footer>
-<script src="js/script.js"></script>
+<script src="javascript/script.js"></script>
+<script src="javascript/address.js"></script>
 </body>
 </html>

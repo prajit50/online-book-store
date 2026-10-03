@@ -4,10 +4,12 @@
     --line: #e5e7eb;
     --soft: #f7f7f7;
     --white: #fff;
-    --accent: #222;
+    --accent: #0f766e;
+    --accent-dark: #115e59;
+    --accent-soft: #ecfeff;
     --danger: #b42318;
     --success: #137333;
-    --radius: 12px
+    --radius: 14px;
 }
 
 * {
@@ -16,7 +18,7 @@
 
 body {
     margin: 0;
-    background: #fff;
+    background: linear-gradient(180deg, #f8fafc 0%, #eef7f5 100%);
     color: var(--ink);
     font: 15px/1.55 Arial, Helvetica, sans-serif
 }
@@ -34,6 +36,19 @@ a {
 .page-content {
     min-height: 70vh;
     padding: 36px 0 60px
+}
+
+form.form-card {
+    position: relative;
+    overflow: hidden;
+}
+
+form.form-card::before {
+    content: "";
+    position: absolute;
+    inset: 0 0 auto 0;
+    height: 6px;
+    background: linear-gradient(90deg, var(--accent), #5eead4);
 }
 
 .site-header {
@@ -70,11 +85,13 @@ a {
 }
 
 .main-nav a {
-    color: #4b5563
+    color: #4b5563;
+    transition: color .2s ease, transform .2s ease;
 }
 
 .main-nav a:hover {
-    color: #000
+    color: #000;
+    transform: translateY(-1px);
 }
 
 .nav-register,
@@ -97,7 +114,8 @@ a {
     background: var(--soft);
     border-radius: var(--radius);
     padding: 58px 7%;
-    margin-bottom: 52px
+    margin-bottom: 52px;
+    animation: fadeUp .5s ease both;
 }
 
 .hero h1 {
@@ -156,12 +174,13 @@ a {
     border-radius: var(--radius);
     overflow: hidden;
     background: #fff;
-    transition: transform .18s, box-shadow .18s
+    transition: transform .18s, box-shadow .18s;
+    animation: fadeUp .5s ease both;
 }
 
 .book-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 10px 24px #11111112
+    transform: translateY(-5px);
+    box-shadow: 0 10px 24px #11111112;
 }
 
 .book-cover {
@@ -227,19 +246,31 @@ a {
 button {
     border: 0;
     cursor: pointer;
-    font: inherit
+    font: inherit;
+    transition: background-color .2s ease, transform .2s ease, box-shadow .2s ease;
 }
 
 .btn {
     display: inline-block;
     padding: 9px 12px;
     border-radius: 8px;
-    background: #222;
-    color: #fff
+    background: linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%);
+    color: #fff;
+    font-weight: 700;
+    box-shadow: 0 8px 18px rgba(15, 118, 110, 0.16);
 }
 
-.btn:hover {
-    background: #000
+.btn:hover,
+.button:hover,
+.nav-register:hover {
+    background: linear-gradient(135deg, var(--accent-dark) 0%, #0b4f4b 100%);
+    transform: translateY(-2px);
+}
+
+.btn:active,
+.button:active,
+.nav-register:active {
+    transform: translateY(0);
 }
 
 .btn-light {
@@ -267,11 +298,14 @@ button {
     padding: 18px 10px;
     border-radius: 10px;
     text-align: center;
-    font-weight: 600
+    font-weight: 600;
+    transition: transform .2s ease, box-shadow .2s ease, background-color .2s ease;
 }
 
 .category-card:hover {
-    background: #f7f7f7
+    background: #f7f7f7;
+    transform: translateY(-3px);
+    box-shadow: 0 6px 16px #11111112;
 }
 
 .filters {
@@ -291,15 +325,74 @@ button {
     width: 190px
 }
 
-input,
-textarea,
-select {
+.phone-field {
+    position: relative;
+    display: flex;
+    align-items: center;
     width: 100%;
-    padding: 10px 11px;
-    border: 1px solid #d1d5db;
-    border-radius: 7px;
+    height: 56px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    overflow: hidden;
     background: #fff;
-    font: inherit
+    transition: border-color .2s ease, box-shadow .2s ease;
+}
+
+.phone-prefix {
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 58px;
+    min-width: 58px;
+    padding: 0 8px;
+    border-right: 1px solid #ccc;
+    background: #fff;
+    font-size: 14px;
+    font-weight: 700;
+    color: #111827;
+    user-select: none;
+    z-index: 2;
+}
+
+.phone-field input {
+    width: 100%;
+    height: 95%;
+    border: none;
+    outline: none;
+    padding: 0 12px 0 64px;
+    margin: 0;
+    font-size: 16px;
+    background: transparent;
+}
+
+.phone-field:focus-within {
+    border-color: #171717;
+    box-shadow: 0 0 0 3px #17171712;
+}
+
+input,
+select,
+textarea {
+    width: 100%;
+    border: 1px solid #d7dde7;
+    border-radius: 10px;
+    padding: 13px 14px;
+    background: rgba(255, 255, 255, 0.9);
+    font: inherit;
+    color: var(--ink);
+    transition: color .2s ease, background-color .2s ease, border-color .2s ease, box-shadow .2s ease, transform .2s ease;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 4px rgba(15, 118, 110, 0.12);
+    outline: none;
 }
 
 textarea {
@@ -316,13 +409,31 @@ label {
 .form-card {
     max-width: 570px;
     margin: 0 auto;
-    border: 1px solid var(--line);
-    border-radius: 12px;
-    padding: 28px
+    border: 1px solid rgba(15, 118, 110, 0.12);
+    border-radius: 18px;
+    padding: 28px 30px 24px;
+    background: linear-gradient(180deg, rgba(255,255,255,0.96), rgba(236, 254, 255, 0.86));
+    box-shadow: 0 20px 45px rgba(15, 23, 42, 0.08);
 }
 
 .form-card h1 {
-    margin-top: 0
+    margin-top: 0;
+    font-size: clamp(2rem, 4vw, 2.6rem);
+    letter-spacing: -0.05em;
+    color: #0f172a;
+}
+
+.form-card .btn {
+    display: block;
+    width: 100%;
+    padding: 12px 16px;
+    margin-top: 8px;
+}
+
+.form-card .muted {
+    margin-top: -8px;
+    margin-bottom: 20px;
+    font-size: 15px;
 }
 
 .form-group {
@@ -335,15 +446,41 @@ label {
     gap: 16px
 }
 
+.checkout-top-row {
+    grid-template-columns: 3fr 2fr;
+}
+
+.checkout-location-row {
+    grid-template-columns: 3fr 1fr;
+}
+
+.checkout-municipality-field {
+    min-width: 0;
+}
+
+.checkout-ward-field {
+    min-width: 0;
+}
+
 .form-note {
     font-size: 13px;
     color: var(--muted)
 }
 
+.form-note a {
+    color: var(--accent-dark);
+    font-weight: 700;
+}
+
+.form-note a:hover {
+    text-decoration: underline;
+}
+
 .alert {
     padding: 12px 15px;
     border-radius: 8px;
-    margin-bottom: 18px
+    margin-bottom: 18px;
+    animation: fadeUp .35s ease both;
 }
 
 .alert-success {
@@ -679,7 +816,50 @@ tr:last-child td {
     place-items: center;
     background: #e7f6ec;
     color: #176b32;
-    font-size: 30px
+    font-size: 30px;
+    animation: popIn .45s ease both;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+@keyframes fadeUp {
+    from {
+        opacity: 0;
+        transform: translateY(12px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes popIn {
+    from {
+        opacity: 0;
+        transform: scale(.7);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    html {
+        scroll-behavior: auto;
+    }
+
+    *,
+    *::before,
+    *::after {
+        animation-duration: .01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: .01ms !important;
+    }
 }
 
 @media(max-width:850px) {

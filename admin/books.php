@@ -46,7 +46,7 @@ if ($search !== '') {
         <tbody><?php while ($b = $books->fetch_assoc()): ?>
                 <tr>
                     <td><img class="thumbnail"
-                            src="<?= $b['image'] ? '../uploads/' . e($b['image']) : '../images/book-placeholder.svg' ?>" alt="">
+                            src="<?= e(book_image_url($b['image'] ?? '')) ?>" alt="">
                     </td>
                     <td><strong><?= e($b['title']) ?></strong><br><small><?= e($b['author']) ?></small></td>
                     <td><?= e($b['category_name']) ?></td>
@@ -57,7 +57,8 @@ if ($search !== '') {
                                 type="hidden" name="delete_id" value="<?= $b['id'] ?>"><button
                                 class="btn btn-danger">Delete</button></form>
                     </td>
-                </tr><?php endwhile; ?>
+                </tr>
+                <?php endwhile; ?>
         </tbody>
     </table>
 </div>

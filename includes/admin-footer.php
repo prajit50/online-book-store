@@ -1,1 +1,8 @@
-</div></main></div><script src="../js/script.js"></script></body></html>
+</div>
+</main>
+</div>
+
+<script src="../javascript/script.js"></script>
+
+</body>
+</html>
