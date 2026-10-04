@@ -1,7 +1,23 @@
 <?php
 require 'includes/db.php';
 require 'includes/auth.php';
-require_user();
+
+if (!is_logged_in()) {
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        $action = $_POST['action'] ?? '';
+        $book_id = (int) ($_POST['book_id'] ?? 0);
+
+        if ($action === 'add' && $book_id > 0) {
+            add_guest_cart_item($book_id, 1);
+            set_flash('Please register to complete your purchase.', 'warning');
+            redirect('register.php');
+        }
+    }
+
+    $_SESSION['flash'] = 'Please register to continue.';
+    $_SESSION['flash_type'] = 'warning';
+    redirect('register.php');
+}
 
 function get_cart_id($conn, $user_id)
 {

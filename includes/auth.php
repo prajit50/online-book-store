@@ -13,6 +13,74 @@ function require_user() {
 function require_admin() {
     if (!is_admin()) { $_SESSION['flash'] = 'Administrator access required.'; redirect('../login.php'); }
 }
+function add_guest_cart_item($book_id, $quantity = 1) {
+    $book_id = (int) $book_id;
+    $quantity = max(1, (int) $quantity);
+
+    if ($book_id <= 0) {
+        return;
+    }
+
+    if (!isset($_SESSION['guest_cart'])) {
+        $_SESSION['guest_cart'] = [];
+    }
+
+    $_SESSION['guest_cart'][$book_id] = ($_SESSION['guest_cart'][$book_id] ?? 0) + $quantity;
+}
+function merge_guest_cart_to_user($conn, $user_id) {
+    if (empty($_SESSION['guest_cart'])) {
+        return;
+    }
+
+    $cart_stmt = $conn->prepare('SELECT id FROM cart WHERE user_id=?');
+    $cart_stmt->bind_param('i', $user_id);
+    $cart_stmt->execute();
+    $cart = $cart_stmt->get_result()->fetch_assoc();
+
+    if ($cart) {
+        $cart_id = (int) $cart['id'];
+    } else {
+        $insert_cart = $conn->prepare('INSERT INTO cart(user_id) VALUES(?)');
+        $insert_cart->bind_param('i', $user_id);
+        $insert_cart->execute();
+        $cart_id = (int) $conn->insert_id;
+    }
+
+    foreach ($_SESSION['guest_cart'] as $book_id => $quantity) {
+        $book_id = (int) $book_id;
+        $quantity = max(1, (int) $quantity);
+
+        $stock = $conn->prepare('SELECT quantity FROM books WHERE id=?');
+        $stock->bind_param('i', $book_id);
+        $stock->execute();
+        $book = $stock->get_result()->fetch_assoc();
+
+        if (!$book || $book['quantity'] <= 0) {
+            continue;
+        }
+
+        $existing = $conn->prepare('SELECT id, quantity FROM cart_items WHERE cart_id=? AND book_id=?');
+        $existing->bind_param('ii', $cart_id, $book_id);
+        $existing->execute();
+        $item = $existing->get_result()->fetch_assoc();
+
+        $new_qty = $quantity;
+        if ($item) {
+            $new_qty = (int) $item['quantity'] + $quantity;
+            $new_qty = min($new_qty, (int) $book['quantity']);
+            $update = $conn->prepare('UPDATE cart_items SET quantity=? WHERE id=?');
+            $update->bind_param('ii', $new_qty, $item['id']);
+            $update->execute();
+        } else {
+            $new_qty = min($quantity, (int) $book['quantity']);
+            $insert = $conn->prepare('INSERT INTO cart_items(cart_id, book_id, quantity) VALUES(?,?,?)');
+            $insert->bind_param('iii', $cart_id, $book_id, $new_qty);
+            $insert->execute();
+        }
+    }
+
+    unset($_SESSION['guest_cart']);
+}
 function set_flash($message, $type = 'success') { $_SESSION['flash'] = $message; $_SESSION['flash_type'] = $type; }
 function show_flash() {
     if (!empty($_SESSION['flash'])) {

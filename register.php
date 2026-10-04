@@ -17,14 +17,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if (!$name || !$email || !$phone || !$password) {
         $error = 'All fields are required.';
+    } elseif (!preg_match('/^[\p{L}][\p{L}\p{M}\s.\'-]*$/u', $name) || preg_match('/\d/', $name)) {
+        $error = 'Name can only contain letters, spaces, and basic punctuation. Numbers are not allowed.';
     } elseif (!preg_match('/^[0-9]{10}$/', $phone)) {
         $error = 'Phone number must be exactly 10 digits.';
     } elseif (!preg_match('/^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/', $email)) {
         $error = 'Enter a valid email address.';
     } elseif ($password !== $confirm) {
         $error = 'Passwords do not match.';
-    } elseif (strlen($password) < 8) {
-        $error = 'Password must be at least 8 characters.';
+    } elseif (strlen($password) < 8 || !preg_match('/[A-Z]/', $password) || !preg_match('/[a-z]/', $password) || !preg_match('/\d/', $password) || !preg_match('/[^A-Za-z0-9]/', $password)) {
+        $error = 'Password must be at least 8 characters and include uppercase, lowercase, number, and special character.';
     } else {
         $check = $conn->prepare('SELECT id FROM users WHERE email=?');
         $check->bind_param('s', $email);
@@ -34,12 +36,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $error = 'This email is already registered.';
         } else {
             $hash = password_hash($password, PASSWORD_DEFAULT);
-            $stmt = $conn->prepare('INSERT INTO users(full_name, email, phone, password) VALUES(?,?,?,?)');
-            $stmt->bind_param('ssss', $name, $email, $phone, $hash);
+            $role = 'user';
+            $stmt = $conn->prepare('INSERT INTO users(full_name, email, phone, password, role) VALUES(?,?,?,?,?)');
+            $stmt->bind_param('sssss', $name, $email, $phone, $hash, $role);
             $stmt->execute();
 
-            set_flash('Account created. Please log in.');
-            redirect('login.php');
+            $user_id = (int) $conn->insert_id;
+
+            session_regenerate_id(true);
+            $_SESSION['user'] = [
+                'id' => $user_id,
+                'name' => $name,
+                'role' => 'user'
+            ];
+
+            merge_guest_cart_to_user($conn, $user_id);
+
+            set_flash('Welcome to BookNest!');
+            redirect('index.php');
         }
     }
 }
