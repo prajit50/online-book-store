@@ -1,10 +1,5 @@
 (function () {
-    const siteRoot = (() => {
-        const path = window.location.pathname || '/';
-        return path.includes('/online-book-store') ? '/online-book-store' : '';
-    })();
-
-    const addressBase = siteRoot ? `${siteRoot}/includes/address` : 'includes/address';
+    const addressBase = new URL('../includes/address/', document.currentScript.src);
 
     function getSelect(selector) {
         return document.getElementById(selector) || document.querySelector(`[data-address="${selector}"]`);
@@ -88,7 +83,7 @@
         const municipality = municipalitySelect || document.createElement('select');
         const ward = wardSelect || document.createElement('select');
 
-        const loadAddressData = (file) => fetch(`${addressBase}/${file}`, { cache: 'no-store' }).then(parseJson);
+        const loadAddressData = (file) => fetch(new URL(file, addressBase), { cache: 'no-store' }).then(parseJson);
 
         Promise.all([
             loadAddressData('provinces.json'),

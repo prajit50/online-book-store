@@ -443,6 +443,65 @@ label {
     margin-bottom: 16px
 }
 
+.field-error {
+    display: block;
+    margin-top: 5px;
+    color: #a00;
+    font-size: 13px;
+}
+
+.field-error[hidden] {
+    display: none;
+}
+
+input[aria-invalid="true"] {
+    border-color: #a00;
+}
+
+.password-input-wrap {
+    position: relative;
+}
+
+.password-input-wrap input {
+    padding-right: 48px;
+}
+
+.password-toggle {
+    position: absolute;
+    top: 50%;
+    right: 10px;
+    display: grid;
+    width: 34px;
+    height: 34px;
+    padding: 7px;
+    place-items: center;
+    transform: translateY(-50%);
+    border-radius: 6px;
+    background: transparent;
+    color: var(--muted);
+}
+
+.password-toggle:hover,
+.password-toggle:focus-visible {
+    background: rgba(15, 118, 110, 0.1);
+    color: var(--accent-dark);
+    outline: none;
+}
+
+.password-toggle svg {
+    width: 20px;
+    height: 20px;
+    fill: none;
+    stroke: currentColor;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-width: 1.8;
+}
+
+.password-toggle svg[hidden] {
+    display: none;
+}
+
 .form-row {
     display: grid;
     grid-template-columns: 1fr 1fr;
